@@ -1,3 +1,4 @@
+import { Comment } from './Comment'
 import styles from './Post.module.css'
 
 export function Post({ author, content }) {
@@ -18,7 +19,7 @@ export function Post({ author, content }) {
 
       <div className={styles.content}>
         <p>
-          <p>Fala galera 👋</p>
+          <p>Fala galeraa 👋</p>
 
           <p>Acabei de subir mais um projeto no meu portifa. É um projeto que fiz no NLW Return, evento da Rocketseat. O nome do projeto é DoctorCare 🚀</p>
 
@@ -43,6 +44,13 @@ export function Post({ author, content }) {
 
 
       </form>
+
+      <div className='style.commentList'>
+        <Comment></Comment>
+        <Comment></Comment>
+        <Comment></Comment>
+      </div>
+
 
 
     </article>
