@@ -46,9 +46,9 @@ export function Post({ author, content }) {
       </form>
 
       <div className='style.commentList'>
-        <Comment></Comment>
-        <Comment></Comment>
-        <Comment></Comment>
+        <Comment />
+        <Comment />
+        <Comment />
       </div>
 
 
