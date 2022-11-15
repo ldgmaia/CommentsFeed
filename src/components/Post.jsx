@@ -1,59 +1,98 @@
+import { format, formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR'
+import { useState } from 'react';
+
 import { Avatar } from './Avatar'
 import { Comment } from './Comment'
+
 import styles from './Post.module.css'
 
-export function Post({ author, content }) {
+export function Post({ author, content, publishedAt }) {
+
+  const [comments, setComments] = useState([
+    'Muito bom, parabens!!! Hein!!!'
+  ])
+
+  const [newCommentText, setNewCommentText] = useState('')
+
+  const publishedDateFormatted = format(publishedAt, "LLL d 'at' HH:mm aa", {
+    // locale: ptBR,
+  });
+
+  const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, {
+    addSuffix: true
+  })
+
+  function handleCreateNewComment() {
+    event.preventDefault();
+
+    setComments([...comments, newCommentText])
+    setNewCommentText('')
+  }
+
+  function handleNewCommentChange() {
+    event.target.setCustomValidity('')
+    setNewCommentText(event.target.value)
+  }
+
+  function deleteComment(commentToDelete) {
+    setComments(comments.filter(comment => comment !== commentToDelete))
+  }
+
+  function handleNewCommentInvalid() {
+    event.target.setCustomValidity('This field is mandatory')
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0
+
   return (
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src={'//github.com/diego3g.png'} />
+          <Avatar src={author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>{author}</strong>
-            <span>Web Developer</span>
+            <strong>{author.name}</strong>
+            <span>{author.role}</span>
           </div>
         </div>
 
-        <time title='15 de Agosto as 18:45' dateTime='2022-08-15 18:45:23'>Publicado ha 1 hora</time>
-
+        <time title={publishedDateFormatted} dateTime={publishedAt.toISOString()}>
+          {publishedDateRelativeToNow}
+        </time>
       </header>
 
       <div className={styles.content}>
-        <p>
-          <p>Fala galeraa 👋</p>
-
-          <p>Acabei de subir mais um projeto no meu portifa. É um projeto que fiz no NLW Return, evento da Rocketseat. O nome do projeto é DoctorCare 🚀</p>
-
-          <p>👉&nbsp;<a href="#">jane.design/doctorcare</a> </p>
-
-          <p>
-            <a href="#">#novoprojeto</a>
-            <a href="#">#nlw</a>
-            <a href="#">#rocketseat</a>
-          </p>
-        </p>
+        {content.map(line => {
+          if (line.type === 'paragraph') {
+            return <p key={line.content}>{line.content}</p>
+          } else if (line.type === 'link') {
+            return <p key={line.content}><a href="">{line.content}</a></p>
+          }
+        })}
       </div>
 
-      <form className={styles.commentForm}>
+      <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
 
         <textarea
+          name='comment'
           placeholder='Deixe um comentario'
+          onChange={handleNewCommentChange}
+          value={newCommentText}
+          onInvalid={handleNewCommentInvalid}
+          required
         />
 
-        <footer><button type="submit">Publicar</button></footer>
-
-
+        <footer>
+          <button disabled={isNewCommentEmpty} type="submit">Publicar</button>
+        </footer>
       </form>
 
       <div className='style.commentList'>
-        <Comment />
-        <Comment />
-        <Comment />
+        {comments.map(comment => {
+          return <Comment key={comment} content={comment} onDeleteComment={deleteComment} />
+        })}
       </div>
-
-
-
     </article>
   )
 }
